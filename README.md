@@ -1,56 +1,41 @@
-# face-attendance-system
 
-Face attendance system using face recognition with Python !
+# SmartBrella Hub - Ohmigos
 
-## Face attendance software
+## 🧩 Problem Statement
+On university campuses, students often face sudden weather changes such as heavy rain or extreme sun exposure. Without immediate access to umbrellas, they risk discomfort, health issues, and even missing important classes or activities. The lack of a reliable system to ensure that umbrellas are available when needed creates uncertainty and inconvenience for students. Therefore, there is a need for a smart umbrella lending system that automates borrowing and returning while allowing students to check real-time availability through a mobile app, ensuring convenience, accountability, and a better campus experience.
 
-<p align="center">
-<a href="https://www.youtube.com/watch?v=z_dbnYHAQYg">
-    <img width="600" src="https://utils-computervisiondeveloper.s3.amazonaws.com/thumbnails/with_play_button/face_attendance.jpg" alt="Watch the video">
-    </br>Watch on YouTube: Face attendance system with Python and face recognition !
-</a>
-</p>
+---
 
-## Spoofing feature
+## ✅ Proposed Solution
+We propose a Smart Umbrella Station powered by ESP32 that enables students to conveniently borrow and return umbrellas using their student card (simulated with buttons in this prototype). The system automatically tracks umbrella availability at each station, records borrow/return times with RTC, and detects overdue returns. To enhance accountability and user experience, students receive real-time WhatsApp notifications (borrow, return, overdue) via CallMeBot. The station integrates an LCD display, RGB LED indicators, and a servo-based locking mechanism for smooth and secure automation. A mobile app is provided to let students check umbrella availability across stations in real time, reducing uncertainty and improving campus convenience.
 
-<p align="center">
-<a href="https://www.youtube.com/watch?v=_KvtVk8Gk1A">
-    <img width="600" src="https://utils-computervisiondeveloper.s3.amazonaws.com/thumbnails/with_play_button/face_attendance_spoofing.jpg" alt="Watch the video">
-    </br>Watch on YouTube: Face attendance system with liveness detection !
-</a>
-</p>
+---
 
-## execution
+## 📂 Project Structure  
 
-- Python 3.8
+```plaintext
+📁 SmartBrella-Hub-Ohmigos
+ ┣ 📁 firmware/                # ESP32 firmware (PlatformIO project)
+ ┃ ┣ 📄 platformio.ini         # PlatformIO config (board, libraries)
+ ┃ ┣ 📄 wokwi.toml             # Wokwi simulation settings
+ ┃ ┣ 📄 diagram.json           # Wokwi wiring diagram
+ ┃ ┣ 📄 README.md              # Firmware documentation
+ ┃ ┣ 📂 src/                   # Main source code
+ ┃ ┃ ┗ 📄 main.cpp
+ ┃ ┣ 📂 lib/                   # Custom libraries (currently placeholder only)
+ ┃ ┃ ┗ 📄 README
+ ┃ ┗ 📂 test/                  # Unit tests (currently placeholder only)
+ ┃   ┗ 📄 README
 
-### windows
+ ┣ 📁 face_recognition/        # Python face recognition module
+ ┃ ┣ 📄 hub.py                 # Enrollment + kiosk (GUI + recognition + logo)
+ ┃ ┣ 📄 main.py                # Minimal recognition demo (optional)
+ ┃ ┣ 📂 faces/                 # Enrollment snapshots (runtime, auto-created)
+ ┃ ┣ 📄 umbrella.db            # SQLite DB (runtime, auto-created)
+ ┃ ┣ 📄 logo.jpg               # Project logo
+ ┃ ┗ 📄 README.md              # Face recognition documentation
 
-In Windows, you will need to do a couple of additional steps before starting with this tutorial:
-- Follow the instructions described in this video https://www.youtube.com/watch?v=oTv7HB6CRpQ
-- Install the packages in requirements_windows.txt.
+ ┣ 📄 README.md                # Root project overview
 
-### linux, mac
 
-- Install the packages in requirements.txt
-
-## spoofing feature
-
-    git clone https://github.com/computervisioneng/Silent-Face-Anti-Spoofing.git
-    pip install -r Silent-Face-Anti-Spoofing/requirements.txt
-
-Remember to add the Silent-Face-Anti-Spoofing directory to your **PYTHONPATH**.
-
-## web app
-
-Face attendance + face recognition web app with React and Python!
-
-<p align="center">
-<a href="https://www.youtube.com/watch?v=yWmW5uEtNws">
-    <img width="600" src="https://utils-computervisiondeveloper.s3.amazonaws.com/thumbnails/with_play_button/face_attendance_web_app_react_python.jpg" alt="Watch the video">
-    </br>Watch on YouTube: Face attendance + face recognition web app with React and Python !
-</a>
-</p>
-
-The code for this project is available [here](https://github.com/computervisiondeveloper/face-attendance-web-app-react-python).
 
