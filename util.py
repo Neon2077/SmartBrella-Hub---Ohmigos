@@ -17,27 +17,32 @@ def get_button(window, text, color, command, fg='white'):
                         command=command,
                         height=2,
                         width=20,
-                        font=('Helvetica bold', 20)
+                        font=('Times New Roman', 22),
+                        relief="groove",
                     )
 
     return button
 
 
 def get_img_label(window):
-    label = tk.Label(window)
+    label = tk.Label(window, bg="white")
     label.grid(row=0, column=0)
     return label
 
 
 def get_text_label(window, text):
     label = tk.Label(window, text=text)
-    label.config(font=("sans-serif", 21), justify="left")
+    label.config(font=("sans-serif", 15), justify="left")
     return label
 
+def get_text_labelstylish(window, text):
+    label = tk.Label(window, text=text)
+    label.config(font=("Georgia", 22), justify="left")
+    return label
 
 def get_entry_text(window):
     inputtxt = tk.Text(window,
-                       height=2,
+                       height=1,
                        width=15, font=("Arial", 32))
     return inputtxt
 
@@ -63,13 +68,13 @@ def recognize(img, db_path):
         path_ = os.path.join(db_path, db_dir[j])
 
         file = open(path_, 'rb')
-        embeddings = pickle.load(file)
-
-        match = face_recognition.compare_faces([embeddings], embeddings_unknown)[0]
+        data = pickle.load(file)
+        embedding=data["embedding"]
+        match = face_recognition.compare_faces([embedding], embeddings_unknown)[0]
         j += 1
 
     if match:
-        return db_dir[j - 1][:-7]
+        return data["info"][0]
     else:
         return 'unknown_person'
 
