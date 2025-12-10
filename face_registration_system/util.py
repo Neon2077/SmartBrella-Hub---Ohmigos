@@ -62,19 +62,16 @@ def recognize(img, db_path):
 
     db_dir = sorted(os.listdir(db_path))
 
-    match = False
-    j = 0
-    while not match and j < len(db_dir):
-        path_ = os.path.join(db_path, db_dir[j])
+    match_found = False
+    for filename in sorted(os.listdir(db_path)):
+        path_ = os.path.join(db_path, filename)
+        with open(path_, 'rb') as file:
+            data = pickle.load(file)
+            embedding = data["embedding"]
+            match = face_recognition.compare_faces([embedding], embeddings_unknown, tolerance=0.40)[0]
 
-        file = open(path_, 'rb')
-        data = pickle.load(file)
-        embedding=data["embedding"]
-        match = face_recognition.compare_faces([embedding], embeddings_unknown)[0]
-        j += 1
+            if match:
+                match_found = True
+                return data["info"]  # ✅ return immediately when found
 
-    if match:
-        return data["info"][0]
-    else:
-        return 'unknown_person'
 
