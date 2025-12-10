@@ -167,10 +167,19 @@ import util
 # from test import test
 import requests #use for download with link
 from io import BytesIO
-
+from firebase_admin import credentials, firestore, initialize_app,db
+import firebase_admin
 
 class App:
     def __init__(self):
+        # cred = credentials.Certificate("upmbrella-firebase-adminsdk-fbsvc-2f9fd5e467.json") #for database firestore
+        cred = credentials.Certificate("smartattend-8e588-firebase-adminsdk-fbsvc-041e7a8d09.json") #for realtime database
+        firebase_admin.initialize_app(cred, {
+            "databaseURL": "https://smartattend-8e588-default-rtdb.firebaseio.com"  # <-- Add this
+        })
+        # initialize_app(cred)          #firestore
+        # self.db = firestore.client()  #firestore
+        self.db = db.reference()        #realtime db
         self.main_window = tk.Tk()
         self.main_window.geometry("1200x520+180+120")
         self.main_window.title("SmartBrella Hub")
@@ -283,14 +292,36 @@ class App:
         label = 1
         if label == 1:
 
-            name = util.recognize(self.most_recent_capture_arr, self.db_dir)
-            if name in ['unknown_person', 'no_persons_found']:
+            # self.name = util.recognize(self.most_recent_capture_arr, self.db_dir)[0]
+            # self.matric = util.recognize(self.most_recent_capture_arr, self.db_dir)[1]
+            # self.phone = util.recognize(self.most_recent_capture_arr, self.db_dir)[2]
+            # if self.name in ['unknown_person', 'no_persons_found']:
+            #     util.msg_box('Ups...', 'Unknown user. Please register new user or try again.')
+            # else:
+            #     util.msg_box('Welcome back !', 'Welcome, {}.'.format(self.name))
+            #     self.clouddatabase()
+            #     with open(self.log_path, 'a') as f:
+            #         f.write('{},{},in\n'.format(self.name, datetime.datetime.now()))
+            #         f.close()
+
+            result = util.recognize(self.most_recent_capture_arr, self.db_dir)
+
+            # if no face or unknown
+            if result in ['unknown_person', 'no_persons_found']:
                 util.msg_box('Ups...', 'Unknown user. Please register new user or try again.')
-            else:
-                util.msg_box('Welcome back !', 'Welcome, {}.'.format(name))
-                with open(self.log_path, 'a') as f:
-                    f.write('{},{},in\n'.format(name, datetime.datetime.now()))
-                    f.close()
+                return
+
+            # otherwise, unpack tuple
+            try:
+                self.name, self.matric, self.phone = result
+                print(self.matric)
+                util.msg_box('Welcome back !', f'Welcome, {self.name}.')
+            except:
+                util.msg_box('Ups...','Unknown user. Please register new user or try again.')
+
+            self.clouddatabase()
+            with open(self.log_path, 'a') as f:
+                f.write(f'{self.name},{datetime.datetime.now()},in\n')
 
         else:
             util.msg_box('Hey, you are a spoofer!', 'You are fake !')
@@ -384,16 +415,40 @@ class App:
         if not encodings:
             util.msg_box('No face detected', 'Please make sure your face is clearly visible and try again.')
             return
-
+        results = util.recognize(self.register_new_user_capture, self.db_dir)
+        print(results)
+            # if no face or unknown
+        if results is not None:
+            util.msg_box('Ups...', 'User account exists. Please log in.')
+            return
         embeddings = encodings[0]
         data={"embedding":embeddings,"info": (name,matric,phone)}
-        file = open(os.path.join(self.db_dir, f'{name,matric,phone}.pickle'), 'wb')
-        pickle.dump(data, file)
+        with open(os.path.join(self.db_dir, f'{name,matric,phone}.pickle'), 'wb') as file:
+            pickle.dump(data, file)
 
         util.msg_box('Success!', 'User was registered successfully !')
 
         self.register_new_user_window.destroy()
 
+    def clouddatabase(self):
+        # doc_ref = self.db.collection("Attendance").document(f"{self.matric}")     #firestore
+        user_ref = self.db.child("Attendance").child(self.matric)               #realtime
+        # doc_ref.set({"Name": f"{self.name}",                                 #firestore
+        #              "Matrics number":f"{self.matric}",
+        #              "Phone number":f"{self.phone}",
+        #              "Time":f"{datetime.datetime.now()}"})
+        user_ref.set({"Name": f"{self.name}",                                   #realtime
+                     "Matrics number":f"{self.matric}",
+                     "Phone number":f"{self.phone}",
+                     "Time":f"{datetime.datetime.now()}"})
+        ref = db.reference("Realtime/Login")
+        ref.set({                                   #realtime
+                     "Name": f"{self.name}",
+                     "Matrics number":f"{self.matric}",
+                     "Phone number":f"{self.phone}",
+                     "Status":"1",
+                     "Time":f"{datetime.datetime.now()}"})
+        
 
 if __name__ == "__main__":
     app = App()
